@@ -1,0 +1,58 @@
+use scott;
+drop table dept;
+drop table emp;
+
+-- (1) 부서 정보를 저장하기 위한 DEPT 테이블을 생성해보자
+CREATE TABLE IF NOT EXISTS DEPT (
+DEPT_NO CHAR(8) NOT NULL ,
+DEPT_NAME VARCHAR(100) NOT NULL,
+DEPT_LOC VARCHAR(100) NOT NULL,
+DEPT_TEL_NO VARCHAR(100) NOT NULL);
+DESC DEPT;
+
+-- (2) DEPT 테이블의 PK를 설정하는 구문을 추가해보자. (단 PK명은 DEPT_PK로 한다.)
+ALTER TABLE DEPT ADD CONSTRAINT DEPT_PK PRIMARY KEY(DEPT_NO);
+DESC DEPT;
+
+-- (3) 데이터를 DEPT 테이블에 추가해보자.
+INSERT INTO DEPT (DEPT_NO, DEPT_NAME, DEPT_LOC, DEPT_TEL_NO) VALUES
+('10', 'SALES', 'SEOUL', '02-671-1111'),
+('20', 'FINANCE', 'SEOUL', '02-862-2222'),
+('30', 'HR', 'BUSAN', '051-111-1111'),
+('40', 'PURCHASE', 'BUSAN', '051-222-2222'),
+('50', 'MANAGEMENT', 'SEOUL', '02-383-3333');
+SELECT * FROM DEPT;
+
+-- (4) 아래와 같은 EMP 테이블을 생성해보자
+CREATE TABLE IF NOT EXISTS EMP (
+EMP_NO int(11) NOT NULL ,
+EMP_NAME varchar(10) NOT NULL,
+EMP_MGE VARCHAR(100) NOT NULL,
+HIREDATE datetime NOT NULL,
+SAL double NOT NULL,
+DEPT_NO CHAR(8) NOT NULL);
+DESC EMP;
+
+-- (5) EMP 테이블의 제약조건 PK, FK를 추가해보자. 단 PK는 EMP_PK, FK는 EMP_FK로 한다.
+ALTER TABLE EMP ADD CONSTRAINT EMP_PK PRIMARY KEY(EMP_NO);
+ALTER TABLE EMP ADD CONSTRAINT EMP_FK FOREIGN KEY(DEPT_NO) REFERENCES DEPT(DEPT_NO) ON DELETE CASCADE;
+
+-- (6) 4번 테이블과 같이 데이터를 추가해보자
+INSERT INTO EMP (EMP_NO, EMP_NAME, EMP_MGE, HIREDATE, SAL, DEPT_NO) VALUES
+(1001, 'KIM', '1003', '2005-01-15', 4750, 20),
+(1002, 'LEE', '1003', '2008-06-05', 3000, 30),
+(1003, 'PARK', '1001', '2007-11-28', 3500, 10);
+SELECT * FROM EMP;
+
+-- (7) HR 부서가 MANAGEMENT 부서로 통합되었다. HR 부서 직원에 대한 소속 부서를 MANAGEMENT 부서로 변경해보자
+update EMP set DEPT_NO = 50 WHERE DEPT_NO=30;
+SELECT * FROM emp;
+
+-- (8) hr 부서를 dept 테이블에서 삭제해보자
+SELECT * FROM DEPT;
+delete FROM DEPT where DEPT_NO=30;
+
+-- (9) 아래의 데이터를 EMP 테이블에 추가해보자. 추가 시 입사일은 시스템의 현재일자를 자동으로 가져와서 부여하도록 하며
+-- <년 월 일>의 형태로 작성해보자
+INSERT INTO EMP (EMP_NO, EMP_NAME, EMP_MGE, HIREDATE, SAL, DEPT_NO) VALUES
+(2001, 'chung', '1001', now(), 3000, 50);
